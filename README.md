@@ -2,7 +2,7 @@
 
 # Page Flip Widget
 
-Add a page flip effect to widgets in your app.
+A flutter package which will help you to add  page flip effect to widgets in your app.
 
 Re-created by Shivam Mishra [@shivbo96](https://github.com/shivbo96)
 
