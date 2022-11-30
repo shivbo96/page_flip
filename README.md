@@ -52,10 +52,10 @@ refer to `example/lib/main.dart`
 
 ## Screenshots
 
-<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/images/1.png" width="250" height="480">
-<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/images/2.png" width="250" height="480">
-<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/images/3.png" width="250" height="480">
-<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/images/animation.mp4" width="250" height="480">
+<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/screenshots/1.png" width="250" height="480">
+<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/screenshots/2.png" width="250" height="480">
+<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/screenshots/3.png" width="250" height="480">
+<img src="https://raw.githubusercontent.com/shivbo96/page_flip/main/screenshots/animation.mp4" width="250" height="480">
 
 ## More information
 
