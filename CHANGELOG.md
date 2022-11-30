@@ -1,2 +1,2 @@
 ## 0.0.1
-* TODO: Describe initial release.
+* Basic setup of page flip with book page flip animation with better example
