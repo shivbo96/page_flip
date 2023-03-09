@@ -9,7 +9,9 @@ void main() {
     MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.indigo, colorScheme: ColorScheme.fromSwatch().copyWith(secondary: Colors.pinkAccent),
+        primaryColor: Colors.indigo,
+        colorScheme:
+            ColorScheme.fromSwatch().copyWith(secondary: Colors.pinkAccent),
       ),
       home: const ExampleScreen(),
     ),
@@ -23,8 +25,9 @@ class ExampleScreen extends StatefulWidget {
   State<ExampleScreen> createState() => _ExampleScreenState();
 }
 
-class _ExampleScreenState extends State<ExampleScreen> with SingleTickerProviderStateMixin {
- late AnimationController _controller;
+class _ExampleScreenState extends State<ExampleScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
 
   @override
   void initState() {
@@ -43,7 +46,8 @@ class _ExampleScreenState extends State<ExampleScreen> with SingleTickerProvider
   }
 
   void _onTap() {
-    if (_controller.status == AnimationStatus.dismissed || _controller.status == AnimationStatus.reverse) {
+    if (_controller.status == AnimationStatus.dismissed ||
+        _controller.status == AnimationStatus.reverse) {
       _controller.forward();
     } else {
       _controller.reverse();
@@ -59,7 +63,6 @@ class _ExampleScreenState extends State<ExampleScreen> with SingleTickerProvider
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-
             PageTurnWidget(
               amount: _controller,
               child: const AlicePage1(),
@@ -127,7 +130,8 @@ class AlicePage1 extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   const Expanded(
-                    child: Text("Alice was beginning to get very tired of sitting by her sister on the bank, and of"
+                    child: Text(
+                        "Alice was beginning to get very tired of sitting by her sister on the bank, and of"
                         " having nothing to do: once or twice she had peeped into the book her sister was "
                         "reading, but it had no pictures or conversations in it, `and what is the use of "
                         "a book,' thought Alice `without pictures or conversation?'"),
@@ -144,19 +148,19 @@ class AlicePage1 extends StatelessWidget {
               const SizedBox(height: 16.0),
               const Text(
                 "So she was considering in her own mind (as well as she could, for the hot day made her "
-                    "feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be "
-                    "worth the trouble of getting up and picking the daisies, when suddenly a White "
-                    "Rabbit with pink eyes ran close by her.\n"
-                    "\n"
-                    "There was nothing so very remarkable in that; nor did Alice think it so very much out "
-                    "of the way to hear the Rabbit say to itself, `Oh dear! Oh dear! I shall be "
-                    "late!' (when she thought it over afterwards, it occurred to her that she ought to "
-                    "have wondered at this, but at the time it all seemed quite natural); but when the "
-                    "Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then "
-                    "hurried on, Alice started to her feet, for it flashed across her mind that she had "
-                    "never before seen a rabbit with either a waistcoat-pocket, or a watch to take out "
-                    "of it, and burning with curiosity, she ran across the field after it, and fortunately "
-                    "was just in time to see it pop down a large rabbit-hole under the hedge.",
+                "feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be "
+                "worth the trouble of getting up and picking the daisies, when suddenly a White "
+                "Rabbit with pink eyes ran close by her.\n"
+                "\n"
+                "There was nothing so very remarkable in that; nor did Alice think it so very much out "
+                "of the way to hear the Rabbit say to itself, `Oh dear! Oh dear! I shall be "
+                "late!' (when she thought it over afterwards, it occurred to her that she ought to "
+                "have wondered at this, but at the time it all seemed quite natural); but when the "
+                "Rabbit actually took a watch out of its waistcoat-pocket, and looked at it, and then "
+                "hurried on, Alice started to her feet, for it flashed across her mind that she had "
+                "never before seen a rabbit with either a waistcoat-pocket, or a watch to take out "
+                "of it, and burning with curiosity, she ran across the field after it, and fortunately "
+                "was just in time to see it pop down a large rabbit-hole under the hedge.",
               ),
             ],
           ),
@@ -198,7 +202,8 @@ class _PageTurnWidgetState extends State<PageTurnWidget> {
 
   void _captureImage(Duration timeStamp) async {
     final pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    final boundary = _boundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
+    final boundary = _boundaryKey.currentContext?.findRenderObject()
+        as RenderRepaintBoundary;
     final image = await boundary.toImage(pixelRatio: pixelRatio);
     setState(() => _image = image);
   }
@@ -220,7 +225,8 @@ class _PageTurnWidgetState extends State<PageTurnWidget> {
         builder: (BuildContext context, BoxConstraints constraints) {
           final size = constraints.biggest;
           return Stack(
-            clipBehavior: Clip.hardEdge, children: <Widget>[
+            clipBehavior: Clip.hardEdge,
+            children: <Widget>[
               Positioned(
                 left: 1 + size.width,
                 top: 1 + size.height,
@@ -300,7 +306,8 @@ class _PageTurnImageState extends State<PageTurnImage> {
   }
 
   void _resolveImage() {
-    final ImageStream newStream = widget.image.resolve(createLocalImageConfiguration(context));
+    final ImageStream newStream =
+        widget.image.resolve(createLocalImageConfiguration(context));
     _updateSourceStream(newStream);
   }
 
@@ -355,7 +362,7 @@ class _PageTurnEffect extends CustomPainter {
     required this.image,
     required this.backgroundColor,
     this.radius = 0.18,
-  })  : super(repaint: amount);
+  }) : super(repaint: amount);
 
   final Animation<double> amount;
   final ui.Image image;
@@ -375,7 +382,8 @@ class _PageTurnEffect extends CustomPainter {
     final h = size.height.toDouble();
     final c = canvas;
     final shadowXf = (wHRatio - movX);
-    final shadowSigma = Shadow.convertRadiusToSigma(8.0 + (32.0 * (1.0 - shadowXf)));
+    final shadowSigma =
+        Shadow.convertRadiusToSigma(8.0 + (32.0 * (1.0 - shadowXf)));
     final pageRect = Rect.fromLTRB(0.0, 0.0, w * shadowXf, h);
     c.drawRect(pageRect, Paint()..color = backgroundColor);
     c.drawRect(
@@ -388,7 +396,8 @@ class _PageTurnEffect extends CustomPainter {
     final ip = Paint();
     for (double x = 0; x < size.width; x++) {
       final xf = (x / w);
-      final v = (calcR * (math.sin(math.pi / 0.5 * (xf - (1.0 - pos)))) + (calcR * 1.1));
+      final v = (calcR * (math.sin(math.pi / 0.5 * (xf - (1.0 - pos)))) +
+          (calcR * 1.1));
       final xv = (xf * wHRatio) - movX;
       final sx = (xf * image.width);
       final sr = Rect.fromLTRB(sx, 0.0, sx + 1.0, image.height.toDouble());
@@ -401,6 +410,7 @@ class _PageTurnEffect extends CustomPainter {
 
   @override
   bool shouldRepaint(_PageTurnEffect oldDelegate) {
-    return oldDelegate.image != image || oldDelegate.amount.value != amount.value;
+    return oldDelegate.image != image ||
+        oldDelegate.amount.value != amount.value;
   }
 }
