@@ -3,12 +3,15 @@ import 'package:page_flip/page_flip.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
+ValueNotifier<bool> flip = ValueNotifier(false);
+ValueNotifier<bool> reCaptureScreenAgain  = ValueNotifier(false);
+ValueNotifier<Widget> currentChild = ValueNotifier(Container(color: Colors.white));
 
 class PageFlipBuilder extends StatefulWidget {
   const PageFlipBuilder({
     Key? key,
     required this.amount,
-    this.backgroundColor = const Color(0xFFFFFFCC),
+    this.backgroundColor =  Colors.black12,
     this.child,
   }) : super(key: key);
 
@@ -17,12 +20,13 @@ class PageFlipBuilder extends StatefulWidget {
   final Widget? child;
 
   @override
-  State<PageFlipBuilder> createState() => _PageFlipBuilderState();
+  State<PageFlipBuilder> createState() => PageFlipBuilderState();
 }
 
-class _PageFlipBuilderState extends State<PageFlipBuilder> {
-  final _boundaryKey = GlobalKey();
+class PageFlipBuilderState extends State<PageFlipBuilder> {
+
   ui.Image? _image;
+  final _boundaryKey = GlobalKey();
 
   @override
   void didUpdateWidget(PageFlipBuilder oldWidget) {
@@ -32,50 +36,62 @@ class _PageFlipBuilderState extends State<PageFlipBuilder> {
     }
   }
 
-  void _captureImage(Duration timeStamp) async {
-    final pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    final boundary =
-        _boundaryKey.currentContext?.findRenderObject() as RenderRepaintBoundary;
-    if (boundary.debugNeedsPaint) {
-      await Future.delayed(const Duration(milliseconds: 20));
-      return _captureImage(timeStamp);
+  void captureImage() async {
+    if(mounted){
+      await Future.delayed(const Duration(milliseconds: 100));
+      RenderObject? boundary = _boundaryKey.currentContext?.findRenderObject();
+      if (boundary is RenderRepaintBoundary) {
+        final image = await boundary.toImage();
+        setState(() {
+          _image = image;
+        });
+      }
     }
-    final image = await boundary.toImage(pixelRatio: pixelRatio);
-    setState(() => _image = image);
   }
+
 
   @override
   Widget build(BuildContext context) {
     if (_image != null) {
-      return CustomPaint(
-        painter: PageFlipEffect(
-          amount: widget.amount,
-          image: _image!,
-          backgroundColor: widget.backgroundColor,
-        ),
-        size: Size.infinite,
-      );
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback(_captureImage);
-      return LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          final size = constraints.biggest;
-          return Stack(
-            clipBehavior: Clip.hardEdge, children: <Widget>[
-              Positioned(
-                left: 1 + size.width,
-                top: 1 + size.height,
-                width: size.width,
-                height: size.height,
-                child: RepaintBoundary(
-                  key: _boundaryKey,
-                  child: widget.child,
-                ),
-              ),
-            ],
+      return ValueListenableBuilder<Widget>(
+        valueListenable: currentChild,
+        builder: ((context, currentChild, child) {
+          return ValueListenableBuilder<bool>(
+            valueListenable: reCaptureScreenAgain,
+            builder: (context, changeImage, child) {
+             return ValueListenableBuilder<bool>(
+                  valueListenable: flip,
+                  builder: (context, value, child) {
+                    // if( changeImage){
+                    //   captureImage();
+                    // }
+                    return !value? currentChild:CustomPaint(
+                      painter: PageFlipEffect(
+                        amount: widget.amount,
+                        image: _image!,
+                        backgroundColor: widget.backgroundColor,
+                      ),
+                      size: Size.infinite,
+                    );
+
+                  });
+            },
           );
-        },
+
+        }),
+
       );
+    }else{
+      captureImage();
+     return screen(widget.child);
     }
+  }
+
+
+  screen(Widget? child){
+    return RepaintBoundary(
+      key: _boundaryKey,
+      child: child,
+    );
   }
 }

@@ -20,8 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageFlipWidget(
         key: _controller,
         backgroundColor: Colors.white,
-        showDragCutoff: false,
-        lastPage: const Center(child: Text('Last Page!')),
+        showDragCutoff: true,
+        lastPage: Container(color:Colors.white,child: const Center(child: Text('Last Page!'))),
         children: <Widget>[
           for (var i = 0; i < 5; i++) DemoPage(page: i),
         ],
