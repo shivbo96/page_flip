@@ -79,6 +79,8 @@ class PageFlipWidgetState extends State<PageFlipWidget>
         vsync: this,
       );
       _controllers.add(controller);
+
+      ///for widgets
       final child = PageFlipBuilder(
         key: globalKey,
         backgroundColor: widget.backgroundColor,
