@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 ValueNotifier<bool> flip = ValueNotifier(false);
-ValueNotifier<bool> reCaptureScreenAgain  = ValueNotifier(false);
-ValueNotifier<Widget> currentChild = ValueNotifier(Container(color: Colors.white));
+ValueNotifier<bool> reCaptureScreenAgain = ValueNotifier(false);
+ValueNotifier<Widget> currentChild =
+    ValueNotifier(Container(color: Colors.white));
 
 class PageFlipBuilder extends StatefulWidget {
   const PageFlipBuilder({
     Key? key,
     required this.amount,
-    this.backgroundColor =  Colors.black12,
+    this.backgroundColor = Colors.black12,
     this.child,
   }) : super(key: key);
 
@@ -24,7 +25,6 @@ class PageFlipBuilder extends StatefulWidget {
 }
 
 class PageFlipBuilderState extends State<PageFlipBuilder> {
-
   ui.Image? _image;
   final _boundaryKey = GlobalKey();
 
@@ -37,7 +37,7 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
   }
 
   void captureImage() async {
-    if(mounted){
+    if (mounted) {
       await Future.delayed(const Duration(milliseconds: 100));
       RenderObject? boundary = _boundaryKey.currentContext?.findRenderObject();
       if (boundary is RenderRepaintBoundary) {
@@ -49,7 +49,6 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     if (_image != null) {
@@ -59,36 +58,34 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
           return ValueListenableBuilder<bool>(
             valueListenable: reCaptureScreenAgain,
             builder: (context, changeImage, child) {
-             return ValueListenableBuilder<bool>(
+              return ValueListenableBuilder<bool>(
                   valueListenable: flip,
                   builder: (context, value, child) {
                     // if( changeImage){
                     //   captureImage();
                     // }
-                    return !value? currentChild:CustomPaint(
-                      painter: PageFlipEffect(
-                        amount: widget.amount,
-                        image: _image!,
-                        backgroundColor: widget.backgroundColor,
-                      ),
-                      size: Size.infinite,
-                    );
-
+                    return !value
+                        ? currentChild
+                        : CustomPaint(
+                            painter: PageFlipEffect(
+                              amount: widget.amount,
+                              image: _image!,
+                              backgroundColor: widget.backgroundColor,
+                            ),
+                            size: Size.infinite,
+                          );
                   });
             },
           );
-
         }),
-
       );
-    }else{
+    } else {
       captureImage();
-     return screen(widget.child);
+      return screen(widget.child);
     }
   }
 
-
-  screen(Widget? child){
+  screen(Widget? child) {
     return RepaintBoundary(
       key: _boundaryKey,
       child: child,

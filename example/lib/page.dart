@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 
 class DemoPage extends StatefulWidget {
   final int page;
-  final VoidCallback? callback;
 
-  const DemoPage({Key? key, required this.page, this.callback})
-      : super(key: key);
+  const DemoPage({Key? key, required this.page}) : super(key: key);
 
   @override
   State<DemoPage> createState() => _DemoPageState();
@@ -24,8 +22,6 @@ class _DemoPageState extends State<DemoPage> {
         isSwitched = false;
       });
     }
-    // reCaptureScreenAgain.value = true;
-    widget.callback!();
   }
 
   @override

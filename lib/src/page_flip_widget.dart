@@ -106,7 +106,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
 
   void _flipPage(DragUpdateDetails details, BoxConstraints dimens) {
     // if (!flip.value) {
-      flip.value = true;
+    flip.value = true;
     // }
     final ratio = details.delta.dx / dimens.maxWidth;
     if (_isForward == null) {
@@ -185,7 +185,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
 
   void reCaptureFlipScreenAgain() {
     reCaptureScreenAgain.value = true;
-    // print('changeImageV newnwnw ${reCaptureScreenAgain.value}');
+    // print('changeImageV ${reCaptureScreenAgain.value}');
     // globalKey?.currentState?.captureImage();
   }
 
@@ -193,6 +193,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
     if (mounted) {
       setState(() {
         pageNumber = index;
+        currentChild.value = Center(child: widget.children[pageNumber]);
       });
     }
     for (var i = 0; i < _controllers.length; i++) {

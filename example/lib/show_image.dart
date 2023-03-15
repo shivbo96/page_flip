@@ -213,10 +213,10 @@ class _PageTurnWidgetState extends State<PageTurnWidget> {
     if (_image != null) {
       return CustomPaint(
         painter: _PageTurnEffect(
-          amount: widget.amount,
-          image: _image!,
-          backgroundColor: widget.backgroundColor,
-        ),
+            amount: widget.amount,
+            image: _image!,
+            backgroundColor: widget.backgroundColor,
+            radius: 0.18),
         size: Size.infinite,
       );
     } else {
@@ -344,10 +344,10 @@ class _PageTurnImageState extends State<PageTurnImage> {
     if (_imageInfo != null) {
       return CustomPaint(
         painter: _PageTurnEffect(
-          amount: widget.amount,
-          image: _imageInfo!.image,
-          backgroundColor: widget.backgroundColor,
-        ),
+            amount: widget.amount,
+            image: _imageInfo!.image,
+            backgroundColor: widget.backgroundColor,
+            radius: 0.18),
         size: Size.infinite,
       );
     } else {

@@ -3,3 +3,6 @@
 
 ## 0.0.2
 * Hot Fix Readme File
+
+## 0.0.3
+* fix vertically lines appearing while changing pages and make page clickable while not flipping
