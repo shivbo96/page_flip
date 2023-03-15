@@ -10,7 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  logger: ^1.1.0
 
 dev_dependencies:
   flutter_test:
