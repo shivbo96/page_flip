@@ -1,50 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:page_flip/page_flip.dart';
+import '../page_flip.dart';
 
 class PageFlipWidget extends StatefulWidget {
   const PageFlipWidget({
     Key? key,
+    this.index,
     this.duration = const Duration(milliseconds: 450),
-    this.cutoff = 0.5,
+    this.cutoffForward = 0.8,
+    this.cutoffPrevious = 0.1,
     this.backgroundColor = const Color(0xFFFFFFCC),
     required this.children,
     this.initialIndex = 0,
     this.lastPage,
-    this.showDragCutoff = false,
   }) : super(key: key);
 
+  final int? index;
   final Color backgroundColor;
   final List<Widget> children;
   final Duration duration;
   final int initialIndex;
   final Widget? lastPage;
-  final bool showDragCutoff;
-  final double cutoff;
+  final double cutoffForward;
+  final double cutoffPrevious;
 
   @override
   PageFlipWidgetState createState() => PageFlipWidgetState();
 }
 
-class PageFlipWidgetState extends State<PageFlipWidget>
-    with TickerProviderStateMixin {
+class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderStateMixin {
   int pageNumber = 0;
-  List<Widget>? pages = [];
-
+  List<Widget> pages = [];
   final List<AnimationController> _controllers = [];
   bool? _isForward;
-  GlobalKey<PageFlipBuilderState>? globalKey;
 
   @override
   void didUpdateWidget(PageFlipWidget oldWidget) {
-    if (oldWidget.children != widget.children) {
-      _setUp();
-    }
-    if (oldWidget.duration != widget.duration) {
-      _setUp();
-    }
-    if (oldWidget.backgroundColor != widget.backgroundColor) {
-      _setUp();
-    }
     super.didUpdateWidget(oldWidget);
   }
 
@@ -59,82 +50,85 @@ class PageFlipWidgetState extends State<PageFlipWidget>
   @override
   void initState() {
     super.initState();
+    imageData = {};
+    currentAmount = {};
+    isCHeckedItem = {};
+    currentPage = ValueNotifier(-1);
+    currentWidget = ValueNotifier(Container());
+    currentPageIndex = ValueNotifier(0);
     _setUp();
   }
 
-  void _setUp() {
+  void _setUp({bool isRefresh = false}) {
     _controllers.clear();
-    pages?.clear();
-    if (widget.children.isNotEmpty) {
-      currentChild.value = Center(child: widget.children[0]);
-    }
+    pages.clear();
     if (widget.lastPage != null) {
       widget.children.add(widget.lastPage!);
     }
     for (var i = 0; i < widget.children.length; i++) {
-      globalKey = GlobalKey<PageFlipBuilderState>();
       final controller = AnimationController(
         value: 1,
         duration: widget.duration,
         vsync: this,
       );
       _controllers.add(controller);
-
-      ///for widgets
       final child = PageFlipBuilder(
-        key: globalKey,
-        backgroundColor: widget.backgroundColor,
         amount: controller,
+        pageIndex: i,
+        key: Key('item$i'),
         child: widget.children[i],
       );
-
-      ///for image
-      // final child = PageFlipImage(
-      //         backgroundColor: widget.backgroundColor,
-      //         amount: controller,
-      //         image: const NetworkImage('https://images.pexels.com/photos/1459505/pexels-photo-1459505.jpeg?auto=compress&cs=tinysrgb&w=1600'),
-      //       );
-      pages?.add(child);
+      pages.add(child);
     }
-    pages = pages?.reversed.toList();
-    pageNumber = widget.initialIndex;
+    pages = pages.reversed.toList();
+    if (isRefresh) {
+      goToPage(pageNumber);
+    } else {
+      pageNumber = widget.initialIndex;
+      lastPageLoad = pages.length < 3 ? 0 : 3;
+    }
+    Future.delayed(
+      const Duration(seconds: 1),
+      () {
+        isFlipForward.value = true;
+      },
+    );
   }
 
-  bool get _isLastPage => pages != null && (pages!.length - 1) == pageNumber;
+  bool get _isLastPage => (pages.length - 1) == pageNumber;
+
+  int lastPageLoad = 0;
 
   bool get _isFirstPage => pageNumber == 0;
 
-  void _flipPage(DragUpdateDetails details, BoxConstraints dimens) {
-    // if (!flip.value) {
-    flip.value = true;
-    // }
+  void _turnPage(DragUpdateDetails details, BoxConstraints dimens) {
+    // if ((_isLastPage) || !isFlipForward.value) return;
+    currentPage.value = pageNumber;
+    currentWidget.value = Container();
     final ratio = details.delta.dx / dimens.maxWidth;
     if (_isForward == null) {
-      if (details.delta.dx > 0) {
+      if (details.delta.dx > 0.0) {
         _isForward = false;
-      } else {
+      } else if (details.delta.dx < -0.2) {
         _isForward = true;
+      } else {
+        _isForward = null;
       }
     }
-
-    if (_isForward! || pageNumber == 0) {
-      int pageSize =
-          widget.lastPage != null ? pages!.length : pages!.length - 1;
+    if (_isForward == true || pageNumber == 0) {
+      int pageSize = widget.lastPage != null ? pages.length : pages.length - 1;
       if (pageNumber != pageSize) {
         if (!_isLastPage) {
           _controllers[pageNumber].value += ratio;
         }
       }
-    } else {
-      _controllers[pageNumber - 1].value += ratio;
     }
   }
 
   Future _onDragFinish() async {
     if (_isForward != null) {
-      if (_isForward!) {
-        if (!_isLastPage &&
-            _controllers[pageNumber].value <= (widget.cutoff + 0.15)) {
+      if (_isForward == true) {
+        if (!_isLastPage && _controllers[pageNumber].value <= (widget.cutoffForward + 0.15)) {
           await nextPage();
         } else {
           if (!_isLastPage) {
@@ -142,8 +136,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
           }
         }
       } else {
-        if (!_isFirstPage &&
-            _controllers[pageNumber - 1].value >= widget.cutoff) {
+        if (!_isFirstPage && _controllers[pageNumber - 1].value >= widget.cutoffPrevious) {
           await previousPage();
         } else {
           if (_isFirstPage) {
@@ -157,10 +150,9 @@ class PageFlipWidgetState extends State<PageFlipWidget>
         }
       }
     }
+
     _isForward = null;
-    flip.value = false;
-    reCaptureScreenAgain.value = false;
-    currentChild.value = Center(child: widget.children[pageNumber]);
+    currentPage.value = -1;
   }
 
   Future nextPage() async {
@@ -168,8 +160,19 @@ class PageFlipWidgetState extends State<PageFlipWidget>
     if (mounted) {
       setState(() {
         pageNumber++;
-        // reCaptureScreenAgain.value = false;
       });
+    }
+
+    if (pageNumber < pages.length) {
+      currentPageIndex.value = pageNumber;
+      currentWidget.value = pages[pageNumber];
+    }
+
+    if (_isLastPage) {
+      currentPageIndex.value = pageNumber;
+      currentWidget.value = pages[pageNumber];
+      isFlipForward.value = false;
+      return;
     }
   }
 
@@ -178,22 +181,17 @@ class PageFlipWidgetState extends State<PageFlipWidget>
     if (mounted) {
       setState(() {
         pageNumber--;
-        // reCaptureScreenAgain.value = false;
       });
     }
-  }
-
-  void reCaptureFlipScreenAgain() {
-    reCaptureScreenAgain.value = true;
-    // print('changeImageV ${reCaptureScreenAgain.value}');
-    // globalKey?.currentState?.captureImage();
+    currentPageIndex.value = pageNumber;
+    currentWidget.value = pages[pageNumber];
+    imageData[pageNumber] = null;
   }
 
   Future goToPage(int index) async {
     if (mounted) {
       setState(() {
         pageNumber = index;
-        currentChild.value = Center(child: widget.children[pageNumber]);
       });
     }
     for (var i = 0; i < _controllers.length; i++) {
@@ -207,66 +205,37 @@ class PageFlipWidgetState extends State<PageFlipWidget>
         }
       }
     }
+    currentPageIndex.value = pageNumber;
+    currentWidget.value = pages[pageNumber];
+    Future.delayed(
+      const Duration(seconds: 2),
+      () {
+        isFlipForward.value = true;
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: LayoutBuilder(
-        builder: (context, dimens) => GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onHorizontalDragCancel: () => _isForward = null,
-          // onHorizontalDragStart: (d)=>,
-          onHorizontalDragUpdate: (details) => _flipPage(details, dimens),
-
-          onHorizontalDragEnd: (details) => _onDragFinish(),
-          child: Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              // if (widget.lastPage != null) ...[
-              //   widget.lastPage!,
-              // ],
-              if (pages != null)
-                ...pages!
-              else ...[
-                const CircularProgressIndicator(),
-              ],
-              // if (widget.firstPage != null) ...[
-              //   widget.firstPage!,
-              // ],
-              // Positioned.fill(
-              //   child: Flex(
-              //     direction: Axis.horizontal,
-              //     children: <Widget>[
-              //       Flexible(
-              //         flex: (widget.cutoff * 10).round(),
-              //         child: Container(
-              //             color: widget.showDragCutoff
-              //                 ? Colors.blue.withAlpha(100)
-              //                 : null,
-              //             /*child: GestureDetector(
-              //               behavior: HitTestBehavior.opaque,
-              //               onTap: _isFirstPage ? null : previousPage,
-              //             )*/
-              //         ),
-              //       ),
-              //       Flexible(
-              //         flex: 10 - (widget.cutoff * 10).round(),
-              //         child: Container(
-              //           color: widget.showDragCutoff
-              //               ? Colors.red.withAlpha(100)
-              //               : null,
-              //           /*child: GestureDetector(
-              //             behavior: HitTestBehavior.opaque,
-              //             onTap: _isLastPage ? null : nextPage,
-              //           ),*/
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
+    return LayoutBuilder(
+      builder: (context, dimens) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTapDown: (details) {},
+        onTapUp: (details) {},
+        onPanDown: (details) {},
+        onPanEnd: (details) {},
+        onTapCancel: () {},
+        onHorizontalDragCancel: () => _isForward = null,
+        onHorizontalDragUpdate: (details) => _turnPage(details, dimens),
+        onHorizontalDragEnd: (details) => _onDragFinish(),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            if (widget.lastPage != null) ...[
+              widget.lastPage!,
             ],
-          ),
+            if (pages.isNotEmpty) ...pages else ...[const SizedBox.shrink()],
+          ],
         ),
       ),
     );

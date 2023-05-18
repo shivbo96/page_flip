@@ -20,18 +20,18 @@ class _HomeScreenState extends State<HomeScreen> {
       body: PageFlipWidget(
         key: _controller,
         backgroundColor: Colors.white,
-        showDragCutoff: true,
         lastPage: Container(
             color: Colors.white,
             child: const Center(child: Text('Last Page!'))),
         children: <Widget>[
-          for (var i = 0; i < 5; i++) DemoPage(page: i),
+          for (var i = 0; i < 10; i++) DemoPage(page: i),
         ],
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.looks_5_outlined),
         onPressed: () {
           _controller.currentState?.goToPage(4);
+          setState(() {});
         },
       ),
     );

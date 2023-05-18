@@ -6,3 +6,6 @@
 
 ## 0.0.3
 * fix vertically lines appearing while changing pages and make page clickable while not flipping
+
+## 0.1.0
+* Optimize the performance and fix crash for large number of pages
