@@ -1,5 +1,7 @@
 [![Pub](https://img.shields.io/pub/v/page_flip.svg)](https://pub.dartlang.org/packages/page_flip)
 
+<a href="https://www.buymeacoffee.com/smishra" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
 # Page Flip Widget
 
 A flutter package which will help you to add  page flip effect to widgets in your app.
