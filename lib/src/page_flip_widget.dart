@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
+
 import '../page_flip.dart';
 
 class PageFlipWidget extends StatefulWidget {
@@ -13,6 +15,11 @@ class PageFlipWidget extends StatefulWidget {
     required this.children,
     this.initialIndex = 0,
     this.lastPage,
+    this.clipBehavior = Clip.none,
+    this.maxScale = 4.0,
+    this.transformationController,
+    this.onTapPage,
+    this.onDoubleTapPage,
   }) : super(key: key);
 
   final int? index;
@@ -23,12 +30,18 @@ class PageFlipWidget extends StatefulWidget {
   final Widget? lastPage;
   final double cutoffForward;
   final double cutoffPrevious;
+  final Clip clipBehavior;
+  final TransformationController? transformationController;
+  final double maxScale;
+  final VoidCallback? onTapPage;
+  final VoidCallback? onDoubleTapPage;
 
   @override
   PageFlipWidgetState createState() => PageFlipWidgetState();
 }
 
-class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderStateMixin {
+class PageFlipWidgetState extends State<PageFlipWidget>
+    with SingleTickerProviderStateMixin {
   int pageNumber = 0;
   List<Widget> pages = [];
   final List<AnimationController> _controllers = [];
@@ -128,7 +141,8 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
   Future _onDragFinish() async {
     if (_isForward != null) {
       if (_isForward == true) {
-        if (!_isLastPage && _controllers[pageNumber].value <= (widget.cutoffForward + 0.15)) {
+        if (!_isLastPage &&
+            _controllers[pageNumber].value <= (widget.cutoffForward + 0.15)) {
           await nextPage();
         } else {
           if (!_isLastPage) {
@@ -136,7 +150,8 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
           }
         }
       } else {
-        if (!_isFirstPage && _controllers[pageNumber - 1].value >= widget.cutoffPrevious) {
+        if (!_isFirstPage &&
+            _controllers[pageNumber - 1].value >= widget.cutoffPrevious) {
           await previousPage();
         } else {
           if (_isFirstPage) {
@@ -220,6 +235,8 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
     return LayoutBuilder(
       builder: (context, dimens) => GestureDetector(
         behavior: HitTestBehavior.opaque,
+        onTap: widget.onTapPage,
+        onDoubleTap: widget.onDoubleTapPage,
         onTapDown: (details) {},
         onTapUp: (details) {},
         onPanDown: (details) {},
@@ -228,14 +245,19 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
         onHorizontalDragCancel: () => _isForward = null,
         onHorizontalDragUpdate: (details) => _turnPage(details, dimens),
         onHorizontalDragEnd: (details) => _onDragFinish(),
-        child: Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            if (widget.lastPage != null) ...[
-              widget.lastPage!,
+        child: InteractiveViewer(
+          maxScale: widget.maxScale,
+          clipBehavior: widget.clipBehavior,
+          transformationController: widget.transformationController,
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              if (widget.lastPage != null) ...[
+                widget.lastPage!,
+              ],
+              if (pages.isNotEmpty) ...pages else ...[const SizedBox.shrink()],
             ],
-            if (pages.isNotEmpty) ...pages else ...[const SizedBox.shrink()],
-          ],
+          ),
         ),
       ),
     );
