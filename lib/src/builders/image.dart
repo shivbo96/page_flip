@@ -7,11 +7,13 @@ class PageFlipImage extends StatefulWidget {
     required this.amount,
     this.image,
     this.backgroundColor = const Color(0xFFFFFFCC),
+    this.isRightSwipe = false,
   }) : super(key: key);
 
   final Animation<double> amount;
   final ImageProvider? image;
   final Color? backgroundColor;
+  final bool isRightSwipe;
 
   @override
   State<PageFlipImage> createState() => _PageFlipImageState();
@@ -103,6 +105,7 @@ class _PageFlipImageState extends State<PageFlipImage> {
           amount: widget.amount,
           image: _imageInfo!.image,
           backgroundColor: widget.backgroundColor,
+          isRightSwipe: widget.isRightSwipe,
         ),
         size: Size.infinite,
       );

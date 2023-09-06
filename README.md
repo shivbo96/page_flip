@@ -42,6 +42,7 @@ import 'package:page_flip/page_flip.dart';
         key: _controller,
         backgroundColor: Colors.white,
         showDragCutoff: false,
+        isRightSwipe: false,
         lastPage: const Center(child: Text('Last Page!')),
         children: <Widget>[
           for (var i = 0; i < 5; i++) DemoPage(page: i),
