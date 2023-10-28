@@ -6,14 +6,9 @@ import 'package:flutter/rendering.dart';
 import '../../page_flip.dart';
 
 Map<int, ui.Image?> imageData = {};
-Map<int, double?> currentAmount = {};
-Map<int, bool> isCHeckedItem = {};
 ValueNotifier<int> currentPage = ValueNotifier(-1);
 ValueNotifier<Widget> currentWidget = ValueNotifier(Container());
-ValueNotifier<bool> isValueRefresh = ValueNotifier(false);
 ValueNotifier<int> currentPageIndex = ValueNotifier(0);
-ValueNotifier<bool> isFlipForward = ValueNotifier(true);
-ValueNotifier<bool> onTapView = ValueNotifier(false);
 
 class PageFlipBuilder extends StatefulWidget {
   const PageFlipBuilder({

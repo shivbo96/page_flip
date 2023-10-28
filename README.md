@@ -38,16 +38,27 @@ import 'package:page_flip/page_flip.dart';
 ## Example
 
 ```
-   PageFlipWidget(
+
+  final _controller = GlobalKey<PageFlipWidgetState>();
+
+
+    Scaffold(
+      body: PageFlipWidget(
         key: _controller,
         backgroundColor: Colors.white,
-        showDragCutoff: false,
-        isRightSwipe: false,
-        lastPage: const Center(child: Text('Last Page!')),
+        // isRightSwipe: true,
+        lastPage: Container(color: Colors.white, child: const Center(child: Text('Last Page!'))),
         children: <Widget>[
-          for (var i = 0; i < 5; i++) DemoPage(page: i),
+          for (var i = 0; i < 10; i++) DemoPage(page: i),
         ],
-      )
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.looks_5_outlined),
+        onPressed: () {
+          _controller.currentState?.goToPage(5);
+        },
+      ),
+    );
       
 ```
 refer to `example/lib/main.dart`
