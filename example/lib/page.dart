@@ -35,8 +35,7 @@ class _DemoPageState extends State<DemoPage> {
             ),
           )
         :*/
-        Scaffold(
-      body: SafeArea(
+      SafeArea(
         bottom: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 24.0),
@@ -68,9 +67,9 @@ class _DemoPageState extends State<DemoPage> {
                 children: <Widget>[
                   const Expanded(
                       child: Text(
-                    '''Elmer Elevator, when he was a kid. He and his mother Dela owned a candy shop in a small town, but were soon forced to close down and move away when the people of the town moved away. They move to a faraway city where they plan to open a new shop, but they eventually lose all the money they save up while getting by''',
-                    style: TextStyle(fontSize: 14, fontFamily: 'Droid Sans'),
-                  )),
+                        '''Elmer Elevator, when he was a kid. He and his mother Dela owned a candy shop in a small town, but were soon forced to close down and move away when the people of the town moved away. They move to a faraway city where they plan to open a new shop, but they eventually lose all the money they save up while getting by''',
+                        style: TextStyle(fontSize: 14, fontFamily: 'Droid Sans'),
+                      )),
                   // GestureDetector(
                   //   onTap: () {
                   //     debugPrint('hello');
@@ -102,7 +101,6 @@ Elmer frees the dragon, a goofball named Boris, and they go on an adventure to f
             ],
           ),
         ),
-      ),
-    );
+      );
   }
 }

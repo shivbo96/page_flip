@@ -19,11 +19,10 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: PageFlipWidget(
         key: _controller,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.yellow,
+        initialIndex: 0,
         // isRightSwipe: true,
-        lastPage: Container(
-            color: Colors.white,
-            child: const Center(child: Text('Last Page!'))),
+        lastPage: Container(color: Colors.white, child: const Center(child: Text('Last Page!'))),
         children: <Widget>[
           for (var i = 0; i < 10; i++) DemoPage(page: i),
         ],
