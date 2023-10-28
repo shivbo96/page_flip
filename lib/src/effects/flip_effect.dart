@@ -31,8 +31,12 @@ class PageFlipEffect extends CustomPainter {
     final h = size.height.toDouble();
     final c = canvas;
     final shadowXf = (wHRatio - movX);
-    final shadowSigma = isRightSwipe ? Shadow.convertRadiusToSigma(8.0 + (32.0 * shadowXf)) : Shadow.convertRadiusToSigma(8.0 + (32.0 * (1.0 - shadowXf)));
-    final pageRect = isRightSwipe ? Rect.fromLTRB(w, 0.0, w * movX, h) : Rect.fromLTRB(0.0, 0.0, w * shadowXf, h);
+    final shadowSigma = isRightSwipe
+        ? Shadow.convertRadiusToSigma(8.0 + (32.0 * shadowXf))
+        : Shadow.convertRadiusToSigma(8.0 + (32.0 * (1.0 - shadowXf)));
+    final pageRect = isRightSwipe
+        ? Rect.fromLTRB(w, 0.0, w * movX, h)
+        : Rect.fromLTRB(0.0, 0.0, w * shadowXf, h);
     if (backgroundColor != null) {
       c.drawRect(pageRect, Paint()..color = backgroundColor!);
     }
@@ -48,7 +52,9 @@ class PageFlipEffect extends CustomPainter {
     final ip = Paint();
     for (double x = 0; x < size.width; x++) {
       final xf = (x / w);
-      final baseValue = isRightSwipe ? math.cos(math.pi / 0.5 * (xf + pos)) : math.sin(math.pi / 0.5 * (xf - (1.0 - pos)));
+      final baseValue = isRightSwipe
+          ? math.cos(math.pi / 0.5 * (xf + pos))
+          : math.sin(math.pi / 0.5 * (xf - (1.0 - pos)));
       final v = calcR * (baseValue + 1.1);
       final xv = isRightSwipe ? (xf * wHRatio) + movX : (xf * wHRatio) - movX;
       final sx = (xf * image.width);
@@ -62,6 +68,7 @@ class PageFlipEffect extends CustomPainter {
 
   @override
   bool shouldRepaint(PageFlipEffect oldDelegate) {
-    return oldDelegate.image != image || oldDelegate.amount.value != amount.value;
+    return oldDelegate.image != image ||
+        oldDelegate.amount.value != amount.value;
   }
 }
