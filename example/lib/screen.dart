@@ -21,7 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
         key: _controller,
         backgroundColor: Colors.white,
         // isRightSwipe: true,
-        lastPage: Container(color: Colors.white, child: const Center(child: Text('Last Page!'))),
+        lastPage: Container(
+            color: Colors.white,
+            child: const Center(child: Text('Last Page!'))),
         children: <Widget>[
           for (var i = 0; i < 10; i++) DemoPage(page: i),
         ],
