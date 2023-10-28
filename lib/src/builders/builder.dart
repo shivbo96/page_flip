@@ -70,7 +70,7 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
           if (widget.pageIndex == currentPageIndex.value ||
               (widget.pageIndex == (currentPageIndex.value + 1))) {
             return ColoredBox(
-              color: widget.backgroundColor??Colors.black12,
+              color: widget.backgroundColor ?? Colors.black12,
               child: RepaintBoundary(
                 key: _boundaryKey,
                 child: widget.child,

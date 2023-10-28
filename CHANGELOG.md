@@ -15,3 +15,6 @@
 
 ## 0.2.1
 * Fixed goto page page functionality 
+
+## 0.2.2
+* We have corrected the supporting features in this PR that are not functioning as intended.
