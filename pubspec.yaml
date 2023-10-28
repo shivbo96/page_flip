@@ -1,6 +1,6 @@
 name: page_flip
 description: A flutter package which will help you to add  page flip effect to widgets in your app.
-version: 0.2.2
+version: 0.2.3
 homepage: https://github.com/shivbo96/page_flip
 
 environment:

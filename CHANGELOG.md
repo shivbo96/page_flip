@@ -18,3 +18,6 @@
 
 ## 0.2.2
 * We have corrected the supporting features in this PR that are not functioning as intended.
+
+## 0.2.3
+* Added a assert to prevent a crash 
