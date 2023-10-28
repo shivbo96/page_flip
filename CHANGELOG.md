@@ -10,5 +10,8 @@
 ## 0.1.0
 * Optimize the performance and fix crash for large number of pages
 
-## 0.2.0
+## 0.1.1
 * Modify PageFlipWidget to allow right swipe 
+
+## 0.1.2
+* Fixed goto page page functionality 

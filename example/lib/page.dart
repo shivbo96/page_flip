@@ -26,7 +26,7 @@ class _DemoPageState extends State<DemoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return widget.page %2 == 0
+    return /*widget.page %2 == 0
         ? Scaffold(
             body: SafeArea(
               bottom: false,
@@ -34,7 +34,7 @@ class _DemoPageState extends State<DemoPage> {
                   Image.network('https://picsum.photos/45${widget.page}'),
             ),
           )
-        : Scaffold(
+        :*/ Scaffold(
             body: SafeArea(
               bottom: false,
               child: Padding(
