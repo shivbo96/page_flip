@@ -1,8 +1,9 @@
 import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../../page_flip.dart';
 
+import '../../page_flip.dart';
 
 Map<int, ui.Image?> imageData = {};
 Map<int, double?> currentAmount = {};
@@ -15,18 +16,20 @@ ValueNotifier<bool> isFlipForward = ValueNotifier(true);
 ValueNotifier<bool> onTapView = ValueNotifier(false);
 
 class PageFlipBuilder extends StatefulWidget {
-  const PageFlipBuilder(
-      {Key? key,
-        required this.amount,
-        this.backgroundColor = Colors.black12,
-        required this.child,
-        required this.pageIndex})
-      : super(key: key);
+  const PageFlipBuilder({
+    Key? key,
+    required this.amount,
+    this.backgroundColor = Colors.black12,
+    required this.child,
+    required this.pageIndex,
+    required this.isRightSwipe,
+  }) : super(key: key);
 
   final Animation<double> amount;
   final int pageIndex;
   final Color backgroundColor;
   final Widget child;
+  final bool isRightSwipe;
 
   @override
   State<PageFlipBuilder> createState() => PageFlipBuilderState();
@@ -38,15 +41,14 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
   void _captureImage(Duration timeStamp, int index) async {
     if (_boundaryKey.currentContext == null) return;
     await Future.delayed(const Duration(milliseconds: 100));
-    if(mounted){
-      final boundary = _boundaryKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
+    if (mounted) {
+      final boundary = _boundaryKey.currentContext!.findRenderObject()!
+          as RenderRepaintBoundary;
       final image = await boundary.toImage();
       setState(() {
         imageData[index] = image.clone();
       });
     }
-
-
   }
 
   @override
@@ -60,13 +62,14 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
               amount: widget.amount,
               image: imageData[widget.pageIndex]!,
               backgroundColor: widget.backgroundColor,
+              isRightSwipe: widget.isRightSwipe,
             ),
             size: Size.infinite,
           );
         } else {
           if (value == widget.pageIndex || (value == (widget.pageIndex + 1))) {
             WidgetsBinding.instance.addPostFrameCallback(
-                  (timeStamp) => _captureImage(timeStamp, currentPageIndex.value),
+              (timeStamp) => _captureImage(timeStamp, currentPageIndex.value),
             );
           }
           if (widget.pageIndex == currentPageIndex.value ||
