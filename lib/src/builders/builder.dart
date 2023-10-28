@@ -14,7 +14,7 @@ class PageFlipBuilder extends StatefulWidget {
   const PageFlipBuilder({
     Key? key,
     required this.amount,
-    this.backgroundColor = Colors.black12,
+    this.backgroundColor,
     required this.child,
     required this.pageIndex,
     required this.isRightSwipe,
@@ -22,7 +22,7 @@ class PageFlipBuilder extends StatefulWidget {
 
   final Animation<double> amount;
   final int pageIndex;
-  final Color backgroundColor;
+  final Color? backgroundColor;
   final Widget child;
   final bool isRightSwipe;
 
@@ -69,9 +69,12 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
           }
           if (widget.pageIndex == currentPageIndex.value ||
               (widget.pageIndex == (currentPageIndex.value + 1))) {
-            return RepaintBoundary(
-              key: _boundaryKey,
-              child: widget.child,
+            return ColoredBox(
+              color: widget.backgroundColor??Colors.black12,
+              child: RepaintBoundary(
+                key: _boundaryKey,
+                child: widget.child,
+              ),
             );
           } else {
             return Container();
