@@ -15,6 +15,7 @@ class PageFlipWidget extends StatefulWidget {
     this.initialIndex = 0,
     this.lastPage,
     this.isRightSwipe = false,
+    this.onPageChange,
   })  : assert(initialIndex < children.length, 'initialIndex cannot be greater than children length'),
         super(key: key);
 
@@ -26,6 +27,9 @@ class PageFlipWidget extends StatefulWidget {
   final double cutoffForward;
   final double cutoffPrevious;
   final bool isRightSwipe;
+
+  /// If the last page is valid, when you enter the last page, the index value will be 1 more than the list length.
+  final Function(int index)? onPageChange;
 
   @override
   PageFlipWidgetState createState() => PageFlipWidgetState();
@@ -95,6 +99,16 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
       currentWidget = ValueNotifier(pages[pageNumber]);
       currentPageIndex = ValueNotifier(widget.initialIndex);
     }
+    if (widget.onPageChange != null) {
+      widget.onPageChange!(currentPageIndex.value);
+    }
+    currentPageIndex.addListener(
+      () {
+        if (widget.onPageChange != null) {
+          widget.onPageChange!(currentPageIndex.value);
+        }
+      },
+    );
   }
 
   bool get _isLastPage => (pages.length - 1) == pageNumber;
