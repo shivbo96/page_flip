@@ -37,8 +37,7 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
     if (_boundaryKey.currentContext == null) return;
     await Future.delayed(const Duration(milliseconds: 100));
     if (mounted) {
-      final boundary = _boundaryKey.currentContext!.findRenderObject()!
-          as RenderRepaintBoundary;
+      final boundary = _boundaryKey.currentContext!.findRenderObject()! as RenderRepaintBoundary;
       final image = await boundary.toImage();
       setState(() {
         imageData[index] = image.clone();
@@ -67,8 +66,7 @@ class PageFlipBuilderState extends State<PageFlipBuilder> {
               (timeStamp) => _captureImage(timeStamp, currentPageIndex.value),
             );
           }
-          if (widget.pageIndex == currentPageIndex.value ||
-              (widget.pageIndex == (currentPageIndex.value + 1))) {
+          if (widget.pageIndex == currentPageIndex.value || (widget.pageIndex == (currentPageIndex.value + 1))) {
             return ColoredBox(
               color: widget.backgroundColor ?? Colors.black12,
               child: RepaintBoundary(
