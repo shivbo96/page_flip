@@ -15,7 +15,10 @@ class PageFlipWidget extends StatefulWidget {
     this.initialIndex = 0,
     this.lastPage,
     this.isRightSwipe = false,
-  })  : assert(initialIndex < children.length, 'initialIndex cannot be greater than children length'),
+    this.onPageFlipped,
+    this.onFlipStart,
+  })  : assert(initialIndex < children.length,
+            'initialIndex cannot be greater than children length'),
         super(key: key);
 
   final Color backgroundColor;
@@ -26,12 +29,15 @@ class PageFlipWidget extends StatefulWidget {
   final double cutoffForward;
   final double cutoffPrevious;
   final bool isRightSwipe;
+  final void Function(int pageNumber)? onPageFlipped;
+  final void Function()? onFlipStart;
 
   @override
   PageFlipWidgetState createState() => PageFlipWidgetState();
 }
 
-class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderStateMixin {
+class PageFlipWidgetState extends State<PageFlipWidget>
+    with TickerProviderStateMixin {
   int pageNumber = 0;
   List<Widget> pages = [];
   final List<AnimationController> _controllers = [];
@@ -109,9 +115,13 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
     currentWidget.value = Container();
     final ratio = details.delta.dx / dimens.maxWidth;
     if (_isForward == null) {
-      if (widget.isRightSwipe ? details.delta.dx < 0.0 : details.delta.dx > 0.0) {
+      if (widget.isRightSwipe
+          ? details.delta.dx < 0.0
+          : details.delta.dx > 0.0) {
         _isForward = false;
-      } else if (widget.isRightSwipe ? details.delta.dx > 0.2 : details.delta.dx < -0.2) {
+      } else if (widget.isRightSwipe
+          ? details.delta.dx > 0.2
+          : details.delta.dx < -0.2) {
         _isForward = true;
       } else {
         _isForward = null;
@@ -122,7 +132,9 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
       final pageLength = pages.length;
       final pageSize = widget.lastPage != null ? pageLength : pageLength - 1;
       if (pageNumber != pageSize && !_isLastPage) {
-        widget.isRightSwipe ? _controllers[pageNumber].value -= ratio : _controllers[pageNumber].value += ratio;
+        widget.isRightSwipe
+            ? _controllers[pageNumber].value -= ratio
+            : _controllers[pageNumber].value += ratio;
       }
     }
   }
@@ -130,7 +142,8 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
   Future _onDragFinish() async {
     if (_isForward != null) {
       if (_isForward == true) {
-        if (!_isLastPage && _controllers[pageNumber].value <= (widget.cutoffForward + 0.15)) {
+        if (!_isLastPage &&
+            _controllers[pageNumber].value <= (widget.cutoffForward + 0.15)) {
           await nextPage();
         } else {
           if (!_isLastPage) {
@@ -138,7 +151,8 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
           }
         }
       } else {
-        if (!_isFirstPage && _controllers[pageNumber - 1].value >= widget.cutoffPrevious) {
+        if (!_isFirstPage &&
+            _controllers[pageNumber - 1].value >= widget.cutoffPrevious) {
           await previousPage();
         } else {
           if (_isFirstPage) {
@@ -158,35 +172,38 @@ class PageFlipWidgetState extends State<PageFlipWidget> with TickerProviderState
   }
 
   Future nextPage() async {
+    widget.onFlipStart?.call();
     await _controllers[pageNumber].reverse();
     if (mounted) {
       setState(() {
         pageNumber++;
       });
-    }
 
-    if (pageNumber < pages.length) {
-      currentPageIndex.value = pageNumber;
-      currentWidget.value = pages[pageNumber];
-    }
+      if (pageNumber < pages.length) {
+        currentPageIndex.value = pageNumber;
+        currentWidget.value = pages[pageNumber];
+      }
 
-    if (_isLastPage) {
-      currentPageIndex.value = pageNumber;
-      currentWidget.value = pages[pageNumber];
-      return;
+      if (_isLastPage) {
+        currentPageIndex.value = pageNumber;
+        currentWidget.value = pages[pageNumber];
+      }
+      widget.onPageFlipped?.call(pageNumber);
     }
   }
 
   Future previousPage() async {
+    widget.onFlipStart?.call();
     await _controllers[pageNumber - 1].forward();
     if (mounted) {
       setState(() {
         pageNumber--;
       });
+      currentPageIndex.value = pageNumber;
+      currentWidget.value = pages[pageNumber];
+      imageData[pageNumber] = null;
+      widget.onPageFlipped?.call(pageNumber);
     }
-    currentPageIndex.value = pageNumber;
-    currentWidget.value = pages[pageNumber];
-    imageData[pageNumber] = null;
   }
 
   Future goToPage(int index) async {
