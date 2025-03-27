@@ -28,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
         children: <Widget>[
           for (var i = 0; i < 10; i++) DemoPage(page: i),
         ],
+        onPageFlipped: (pageNumber) {
+          debugPrint('onPageFlipped: (pageNumber) $pageNumber');
+        },
+        onFlipStart: () {
+          debugPrint('onFlipStart');
+        },
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.looks_5_outlined),
