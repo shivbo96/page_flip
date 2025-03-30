@@ -1,10 +1,9 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
 import '../page_flip.dart';
 
 class PageFlipWidget extends StatefulWidget {
+  final PageFlipController? controller;
   const PageFlipWidget({
     Key? key,
     this.duration = const Duration(milliseconds: 450),
@@ -17,6 +16,7 @@ class PageFlipWidget extends StatefulWidget {
     this.isRightSwipe = false,
     this.onPageFlipped,
     this.onFlipStart,
+    this.controller,
   })  : assert(initialIndex < children.length,
             'initialIndex cannot be greater than children length'),
         super(key: key);
@@ -59,10 +59,13 @@ class PageFlipWidgetState extends State<PageFlipWidget>
   @override
   void initState() {
     super.initState();
+    // Initialize global variables (defined in page_flip.dart)
     imageData = {};
     currentPage = ValueNotifier(-1);
     currentWidget = ValueNotifier(Container());
     currentPageIndex = ValueNotifier(0);
+    // Associate the controller, if provided, with this state
+    widget.controller?._state = this;
     _setUp();
   }
 
@@ -104,13 +107,11 @@ class PageFlipWidgetState extends State<PageFlipWidget>
   }
 
   bool get _isLastPage => (pages.length - 1) == pageNumber;
-
   int lastPageLoad = 0;
-
   bool get _isFirstPage => pageNumber == 0;
 
   void _turnPage(DragUpdateDetails details, BoxConstraints dimens) {
-    // if ((_isLastPage) || !isFlipForward.value) return;
+    // During dragging, update currentPage to trigger the builder's animation effect
     currentPage.value = pageNumber;
     currentWidget.value = Container();
     final ratio = details.delta.dx / dimens.maxWidth;
@@ -127,7 +128,6 @@ class PageFlipWidgetState extends State<PageFlipWidget>
         _isForward = null;
       }
     }
-
     if (_isForward == true || pageNumber == 0) {
       final pageLength = pages.length;
       final pageSize = widget.lastPage != null ? pageLength : pageLength - 1;
@@ -166,34 +166,44 @@ class PageFlipWidgetState extends State<PageFlipWidget>
         }
       }
     }
-
     _isForward = null;
     currentPage.value = -1;
   }
 
+  /// Triggers the animation to advance to the next page – via gesture or button.
   Future nextPage() async {
+    // Prevent going beyond the last page
+    if (_isLastPage) return;
     widget.onFlipStart?.call();
+    // Update currentPage to trigger the builder effect
+    currentPage.value = pageNumber;
     await _controllers[pageNumber].reverse();
     if (mounted) {
       setState(() {
         pageNumber++;
       });
-
       if (pageNumber < pages.length) {
         currentPageIndex.value = pageNumber;
         currentWidget.value = pages[pageNumber];
       }
-
+      // In case it is the last page, ensure the notifiers are updated
       if (_isLastPage) {
         currentPageIndex.value = pageNumber;
         currentWidget.value = pages[pageNumber];
       }
       widget.onPageFlipped?.call(pageNumber);
     }
+    // Reset currentPage after the animation
+    currentPage.value = -1;
   }
 
+  /// Triggers the animation to go back to the previous page – via gesture or button.
   Future previousPage() async {
+    // Prevent going before the first page
+    if (_isFirstPage) return;
     widget.onFlipStart?.call();
+    // Update currentPage to trigger the reverse animation effect
+    currentPage.value = pageNumber - 1;
     await _controllers[pageNumber - 1].forward();
     if (mounted) {
       setState(() {
@@ -204,6 +214,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
       imageData[pageNumber] = null;
       widget.onPageFlipped?.call(pageNumber);
     }
+    currentPage.value = -1;
   }
 
   Future goToPage(int index) async {
@@ -247,10 +258,29 @@ class PageFlipWidgetState extends State<PageFlipWidget>
             if (widget.lastPage != null) ...[
               widget.lastPage!,
             ],
-            if (pages.isNotEmpty) ...pages else ...[const SizedBox.shrink()],
+            if (pages.isNotEmpty)
+              ...pages
+            else
+              const SizedBox.shrink(),
           ],
         ),
       ),
     );
+  }
+}
+
+class PageFlipController {
+  PageFlipWidgetState? _state;
+  
+  void nextPage() {
+    _state?.nextPage();
+  }
+
+  void previousPage() {
+    _state?.previousPage();
+  }
+
+  void goToPage(int index) {
+    _state?.goToPage(index);
   }
 }
