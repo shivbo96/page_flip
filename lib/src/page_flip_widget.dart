@@ -258,10 +258,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
             if (widget.lastPage != null) ...[
               widget.lastPage!,
             ],
-            if (pages.isNotEmpty)
-              ...pages
-            else
-              const SizedBox.shrink(),
+            if (pages.isNotEmpty) ...pages else const SizedBox.shrink(),
           ],
         ),
       ),
@@ -271,7 +268,7 @@ class PageFlipWidgetState extends State<PageFlipWidget>
 
 class PageFlipController {
   PageFlipWidgetState? _state;
-  
+
   void nextPage() {
     _state?.nextPage();
   }
