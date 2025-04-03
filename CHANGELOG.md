@@ -25,3 +25,6 @@
 ## 0.2.4
 * On page flip #22
 * Add next and previous control
+
+## 0.2.5
+* updated readme file
